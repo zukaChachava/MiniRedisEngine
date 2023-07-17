@@ -30,10 +30,5 @@ impl Listener{
         stream.read_to_string(&mut text).await.unwrap();
         text
     }
-
-    pub fn convert_to_string(data: &[u8; 256]) -> String{
-        let converted_text = String::from_utf8_lossy(data);
-        converted_text.to_string()
-    }
 }
 

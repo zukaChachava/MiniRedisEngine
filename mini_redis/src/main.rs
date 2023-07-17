@@ -12,7 +12,12 @@ async fn main() -> () {
 
     loop{
         let mut stream = listener::Listener::listen(&tcp_listener).await;
-        let buffer = listener::Listener::read_request(&mut stream).await;
-        println!("{:?}", buffer);
+        let message = listener::Listener::read_request(&mut stream).await;
+        let result = engine.process_message(message);
+
+        match result {
+            Ok(result_message) => println!("{}", result_message),
+            Err(message) => println!("{}", message)
+        }
     }
 }

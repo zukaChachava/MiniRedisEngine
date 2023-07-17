@@ -1,7 +1,8 @@
 pub enum Methods{
-    add = 1,
-    remove = 2,
-    update = 3
+    Get = 0,
+    Add = 1,
+    Remove = 2,
+    Update = 3
 }
 
 pub const SEPERATOR : u8 = 0x0;
