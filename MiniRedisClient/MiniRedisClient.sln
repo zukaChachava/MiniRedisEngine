@@ -2,6 +2,14 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniRedisClient.Core", "MiniRedisClient.Core\MiniRedisClient.Core.csproj", "{3E52C226-96D4-4D0C-9178-0B10087CC87B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniRedisClient.Abstractions", "MiniRedisClient.Abstractions\MiniRedisClient.Abstractions.csproj", "{16C61390-0034-43A2-8BE3-F30326E89458}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{9654BABE-FE3D-451A-81C6-AD48A006A5D0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppExample", "AppExample", "{19664B9A-F56E-4914-AB20-93496A0EAFFC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniRedisClient.Example", "MiniRedisClient.Example\MiniRedisClient.Example.csproj", "{D9E7BB6A-8E89-46E5-8FBA-4019EFC2C0F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +20,18 @@ Global
 		{3E52C226-96D4-4D0C-9178-0B10087CC87B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E52C226-96D4-4D0C-9178-0B10087CC87B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E52C226-96D4-4D0C-9178-0B10087CC87B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16C61390-0034-43A2-8BE3-F30326E89458}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16C61390-0034-43A2-8BE3-F30326E89458}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16C61390-0034-43A2-8BE3-F30326E89458}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16C61390-0034-43A2-8BE3-F30326E89458}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9E7BB6A-8E89-46E5-8FBA-4019EFC2C0F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9E7BB6A-8E89-46E5-8FBA-4019EFC2C0F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9E7BB6A-8E89-46E5-8FBA-4019EFC2C0F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9E7BB6A-8E89-46E5-8FBA-4019EFC2C0F9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{16C61390-0034-43A2-8BE3-F30326E89458} = {9654BABE-FE3D-451A-81C6-AD48A006A5D0}
+		{3E52C226-96D4-4D0C-9178-0B10087CC87B} = {9654BABE-FE3D-451A-81C6-AD48A006A5D0}
+		{D9E7BB6A-8E89-46E5-8FBA-4019EFC2C0F9} = {19664B9A-F56E-4914-AB20-93496A0EAFFC}
 	EndGlobalSection
 EndGlobal

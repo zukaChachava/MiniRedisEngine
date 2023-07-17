@@ -54,6 +54,10 @@ impl Engine{
         let mut temp: [u8; 256] = [0u8; 256];
 
         for i in message{
+            if state == 2{
+                break;
+            }
+
             if i == constants::SEPERATOR{
                 data[state] = temp;
                 state += 1;
