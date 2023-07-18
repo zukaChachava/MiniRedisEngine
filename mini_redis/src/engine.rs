@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-
 use crate::constants;
 
 pub struct Engine{
@@ -52,9 +51,10 @@ impl Engine{
         let mut state: usize = 0;
         let mut data : [[u8; 256]; 3] = [[0u8; 256]; 3];
         let mut temp: [u8; 256] = [0u8; 256];
+        let mut index = 0;
 
         for i in message{
-            if state == 2{
+            if state == 3{
                 break;
             }
 
@@ -62,17 +62,21 @@ impl Engine{
                 data[state] = temp;
                 state += 1;
                 temp = [0u8; 256];
+                index = 0;
             }
+            temp[index] = i;
+            index += 1;
         }
 
-        if state != 2{
+        if state != 3{
             return Result::Err("Invalid format".to_string());
         }
 
         let method = match data[0][0]  {
-            1 => constants::Methods::Add,
-            2 => constants::Methods::Remove,
-            3 => constants::Methods::Update,
+            1 => constants::Methods::Get,
+            2 => constants::Methods::Add,
+            3 => constants::Methods::Remove,
+            4 => constants::Methods::Update,
             _ => return Result::Err("Ivalid Method Detected".to_string())
         };
 

@@ -5,4 +5,8 @@ using MiniRedisClient.Core;
 
 IMiniRedisClient client = new RedisClient();
 
-await client.AddAsync("zura", "chachava");
+await client.AddAsync("pirveli", "chachava");
+await client.AddAsync("meore", "chachava");
+await client.AddAsync("mesame", "chachava");
+
+await client.GetAsync<string>("zura");

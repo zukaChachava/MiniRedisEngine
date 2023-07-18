@@ -16,6 +16,8 @@ public class RedisClient : IMiniRedisClient
         _tcpClient = tcpClient;
     }
 
+    private TcpClient TcpClient => new TcpClient("127.0.0.1", 9009);
+
     public RedisClient(string hostname, int port) : this(new TcpClient(hostname, port)){}
 
     public RedisClient(): this("127.0.0.1", 9009){}
@@ -24,14 +26,14 @@ public class RedisClient : IMiniRedisClient
     public Task GetAsync<TValue>(string key)
     {
         byte[] bytes = GenerateBytes(GenerateMessage(Method.Get, key, string.Empty));
-        using NetworkStream networkStream = _tcpClient.GetStream();
+        NetworkStream networkStream = TcpClient.GetStream();
         return networkStream.WriteAsync(bytes, 0, bytes.Length);
     }
 
     public Task AddAsync<TValue>(string key, TValue value)
     {
         byte[] bytes = GenerateBytes(GenerateMessage(Method.Add, key, value?.ToString() ?? string.Empty));
-        using NetworkStream networkStream = _tcpClient.GetStream();
+        NetworkStream networkStream = TcpClient.GetStream();
         return networkStream.WriteAsync(bytes, 0, bytes.Length);
     }
 
@@ -49,7 +51,7 @@ public class RedisClient : IMiniRedisClient
     {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
-            .Append(method)
+            .Append((byte)method)
             .Append('\0')
             .Append(key)
             .Append('\0')
@@ -61,6 +63,8 @@ public class RedisClient : IMiniRedisClient
 
     private byte[] GenerateBytes(string message)
     {
-        return Encoding.UTF8.GetBytes(message);
+        byte[] encodedData =  Encoding.UTF8.GetBytes(message);
+        encodedData[0] = (byte)(encodedData[0] - 48);
+        return encodedData;
     }
 }
