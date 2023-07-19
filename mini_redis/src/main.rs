@@ -1,6 +1,7 @@
 mod listener;
 mod constants;
 mod engine;
+mod writer;
 
 #[tokio::main]
 async fn main() -> () {
@@ -9,15 +10,24 @@ async fn main() -> () {
     let mut engine: engine::Engine = engine::Engine::new();
 
     // Standard Request: <method>:<key>:<value> 
+    // Standard Response: <type>:<data>
 
     loop{
         let mut stream = listener::Listener::listen(&tcp_listener).await;
         let message = listener::Listener::read_request(&mut stream).await;
-        let result = engine.process_message(message);
+        let result = engine.process_message(&message);
 
         match result {
-            Ok(result_message) => println!("{}", result_message),
-            Err(message) => println!("{}", message)
+            Ok(result_message) => {
+                println!("{}", result_message);
+                let response = format!("{}{}{}", constants::ResponseType::Data as i8, '\0', result_message);
+                writer::write(stream, String::as_bytes(&response)).await;
+            },
+            Err(message) => {
+                println!("{}", message);
+                let response = format!("{}{}{}", constants::ResponseType::Error as i8, '\0', message);
+                writer::write(stream, String::as_bytes(&response)).await;
+            }
         }
     }
 }

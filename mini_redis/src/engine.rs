@@ -10,7 +10,7 @@ impl Engine{
         Engine {data: HashMap::new()}
     }
 
-    pub fn process_message(&mut self, message: [u8; 256]) -> Result<String, String>{
+    pub fn process_message(&mut self, message: &[u8]) -> Result<String, String>{
         let splitted_parts = Engine::split(message);
 
         let data = match splitted_parts {
@@ -57,7 +57,7 @@ impl Engine{
         };
     }
 
-    fn split(message: [u8; 256]) -> Result<(constants::Methods, String, String), String>{
+    fn split(message: &[u8]) -> Result<(constants::Methods, String, String), String>{
         let mut state: usize = 0;
         let mut data : [[u8; 256]; 3] = [[0u8; 256]; 3];
         let mut temp: [u8; 256] = [0u8; 256];
@@ -68,13 +68,13 @@ impl Engine{
                 break;
             }
 
-            if i == constants::SEPERATOR{
+            if *i == constants::SEPERATOR{
                 data[state] = temp;
                 state += 1;
                 temp = [0u8; 256];
                 index = 0;
             }
-            temp[index] = i;
+            temp[index] = *i;
             index += 1;
         }
 

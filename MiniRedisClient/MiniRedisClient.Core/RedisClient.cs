@@ -22,50 +22,74 @@ public class RedisClient : IMiniRedisClient
 
     public async Task GetAsync<TValue>(string key)
     {
-        await ManageConnectionAsync(async (networkStream) =>
+        var response = await ExecuteRequestAsync(async (networkStream) =>
         {
             byte[] bytes = GenerateBytes(GenerateMessage(Method.Get, key, string.Empty));
             await networkStream.WriteAsync(bytes, 0, bytes.Length);
             await networkStream.FlushAsync();
+            
+            byte[] responseBytes = new byte[256];
+            int _ = await networkStream.ReadAsync(responseBytes);
+            return responseBytes;
         });
+        
+        Console.WriteLine(Encoding.UTF8.GetString(response));
     }
 
     public async Task AddAsync<TValue>(string key, TValue value)
     {
-        await ManageConnectionAsync(async (networkStream) =>
+        var response = await ExecuteRequestAsync(async (networkStream) =>
         {
             byte[] bytes = GenerateBytes(GenerateMessage(Method.Add, key, value?.ToString() ?? string.Empty));
             await networkStream.WriteAsync(bytes, 0, bytes.Length);
             await networkStream.FlushAsync();
+
+            byte[] responseBytes = new byte[256];
+            int _ = await networkStream.ReadAsync(responseBytes);
+            return responseBytes;
         });
+        
+        Console.WriteLine(Encoding.UTF8.GetString(response));
     }
 
     public async Task RemoveAsync(string key)
     {
-        await ManageConnectionAsync(async (networkStream) =>
+        var response = await ExecuteRequestAsync(async (networkStream) =>
         {
             byte[] bytes = GenerateBytes(GenerateMessage(Method.Remove, key, string.Empty));
             await networkStream.WriteAsync(bytes, 0, bytes.Length);
             await networkStream.FlushAsync();
+            
+            byte[] responseBytes = new byte[256];
+            int _ = await networkStream.ReadAsync(responseBytes);
+            return responseBytes;
         });
+
+        Console.WriteLine(Encoding.UTF8.GetString(response));
     }
 
     public async Task UpdateAsync<TValue>(string key, TValue value)
     {
-        await ManageConnectionAsync(async (networkStream) =>
+        var response = await ExecuteRequestAsync(async (networkStream) =>
         {
             byte[] bytes = GenerateBytes(GenerateMessage(Method.Remove, key, value?.ToString() ?? string.Empty));
             await networkStream.WriteAsync(bytes, 0, bytes.Length);
             await networkStream.FlushAsync();
+            
+            byte[] responseBytes = new byte[256];
+            int _ = await networkStream.ReadAsync(responseBytes);
+            return responseBytes;
         });
+        
+        Console.WriteLine(Encoding.UTF8.GetString(response));
     }
 
-    private async Task ManageConnectionAsync(Func<NetworkStream, Task> operations)
+    private async Task<byte[]> ExecuteRequestAsync(Func<NetworkStream, Task<byte[]>> operations)
     {
         using var client = new TcpClient();
         await client.ConnectAsync(_host, _port);
         await using NetworkStream networkStream = client.GetStream();
-        await operations.Invoke(networkStream);
+        return await operations.Invoke(networkStream);
     }
 
     private string GenerateMessage(Method method, string key, string value)
