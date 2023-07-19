@@ -29,7 +29,12 @@ impl Engine{
     }
 
     fn get(&self, key: String) -> String{
-        self.data.get(&key).unwrap().clone()
+        let result = match self.data.get(&key){
+            Some(data) => data.to_string(),
+            None => "Not Found".to_string()
+        };
+
+        result
     }
 
     fn add(&mut self, key: String, value: String) -> String{
@@ -44,7 +49,12 @@ impl Engine{
     }
 
     fn update(&mut self, key: String, value: String) -> String{
-        todo!()
+        let result = self.data.insert(key.clone(), value.clone());
+
+        match result {
+            Some(_) => return key,
+            None => return self.add(key, value)
+        };
     }
 
     fn split(message: [u8; 256]) -> Result<(constants::Methods, String, String), String>{
