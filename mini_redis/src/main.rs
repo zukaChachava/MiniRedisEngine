@@ -20,12 +20,12 @@ async fn main() -> () {
         match result {
             Ok(result_message) => {
                 println!("{}", result_message);
-                let response = format!("{}{}{}", constants::ResponseType::Data as i8, '\0', result_message);
+                let response = format!("{}{}{}", (constants::ResponseType::Data as u8) as char, constants::SEPERATOR, result_message);
                 writer::write(stream, String::as_bytes(&response)).await;
             },
             Err(message) => {
                 println!("{}", message);
-                let response = format!("{}{}{}", constants::ResponseType::Error as i8, '\0', message);
+                let response = format!("{}{}{}", (constants::ResponseType::Error as u8) as char, constants::SEPERATOR, message);
                 writer::write(stream, String::as_bytes(&response)).await;
             }
         }

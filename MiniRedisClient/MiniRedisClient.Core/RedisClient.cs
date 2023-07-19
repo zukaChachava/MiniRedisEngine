@@ -33,7 +33,7 @@ public class RedisClient : IMiniRedisClient
             return responseBytes;
         });
         
-        Console.WriteLine(Encoding.UTF8.GetString(response));
+        Console.WriteLine(ProcessResponse(response));
     }
 
     public async Task AddAsync<TValue>(string key, TValue value)
@@ -49,7 +49,7 @@ public class RedisClient : IMiniRedisClient
             return responseBytes;
         });
         
-        Console.WriteLine(Encoding.UTF8.GetString(response));
+        Console.WriteLine(ProcessResponse(response));
     }
 
     public async Task RemoveAsync(string key)
@@ -65,7 +65,7 @@ public class RedisClient : IMiniRedisClient
             return responseBytes;
         });
 
-        Console.WriteLine(Encoding.UTF8.GetString(response));
+        Console.WriteLine(ProcessResponse(response));
     }
 
     public async Task UpdateAsync<TValue>(string key, TValue value)
@@ -81,7 +81,7 @@ public class RedisClient : IMiniRedisClient
             return responseBytes;
         });
         
-        Console.WriteLine(Encoding.UTF8.GetString(response));
+        Console.WriteLine(ProcessResponse(response));
     }
 
     private async Task<byte[]> ExecuteRequestAsync(Func<NetworkStream, Task<byte[]>> operations)
@@ -95,7 +95,7 @@ public class RedisClient : IMiniRedisClient
     private string GenerateMessage(Method method, string key, string value)
     {
         return new StringBuilder()
-            .Append((byte)method)
+            .Append((char)method)
             .Append('\0')
             .Append(key)
             .Append('\0')
@@ -105,8 +105,43 @@ public class RedisClient : IMiniRedisClient
 
     private byte[] GenerateBytes(string message)
     {
-        byte[] encodedData =  Encoding.UTF8.GetBytes(message);
-        encodedData[0] = (byte)(encodedData[0] - 48);
-        return encodedData;
+        return Encoding.UTF8.GetBytes(message);
+    }
+
+    private string ProcessResponse(byte[] message)
+    {
+        (var responseType, string response) = SplitResponseMessage(message);
+
+        if (responseType == ResponseType.Error)
+            throw new Exception(response); // ToDo: make custom exception
+        
+        return response;
+    }
+
+    private (ResponseType responseType, string message) SplitResponseMessage(byte[] message)
+    {
+        byte[,] messageParts = new byte[2, 256];
+        byte state = 0;
+        short index = 0;
+        
+        foreach (var data in message)
+        {
+            if(state == 2)
+                break;
+            
+            if (data == 0)
+            {
+                index = 0;
+                state++;
+                continue;
+            }
+
+            messageParts[state, index++] = data;
+        }
+
+        return ((ResponseType)messageParts[0,0], 
+            Encoding.UTF8.GetString(
+                Enumerable.Range(0, messageParts.GetLength(1))
+                    .Select(i => messageParts[state - 1, i]).ToArray()));
     }
 }
