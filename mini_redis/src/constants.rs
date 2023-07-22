@@ -5,9 +5,15 @@ pub enum Methods{
     Update = 4
 }
 
+pub struct Response{
+    pub response_type: ResponseType,
+    pub data: String
+}
+
 pub enum ResponseType{
-    Data = 1,
-    Error = 2
+    Error = 1,
+    Data = 2,
+    NotFound = 3
 }
 
 pub const SEPERATOR : u8 = 0x0;

@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::constants;
+use crate::constants::{self, Response};
 
 pub struct Engine{
     data: HashMap<String, String>,
@@ -10,7 +10,7 @@ impl Engine{
         Engine {data: HashMap::new()}
     }
 
-    pub fn process_message(&mut self, message: &[u8]) -> Result<String, String>{
+    pub fn process_message(&mut self, message: &[u8]) -> Result<Response, String>{
         let splitted_parts = Engine::split(message);
 
         let data = match splitted_parts {
@@ -28,33 +28,31 @@ impl Engine{
         return Result::Ok(result);
     }
 
-    fn get(&self, key: String) -> String{
-        let result = match self.data.get(&key){
-            Some(data) => data.to_string(),
-            None => "Not Found".to_string()
-        };
-
-        result
+    fn get(&self, key: String) -> Response{
+        match self.data.get(&key){
+            Some(data) => Response { response_type: constants::ResponseType::Data, data: data.to_string() } ,
+            None => Response { response_type: constants::ResponseType::NotFound, data: "Item Not Found".to_string() }
+        }
     }
 
-    fn add(&mut self, key: String, value: String) -> String{
+    fn add(&mut self, key: String, value: String) -> Response{
         let response = key.clone();
         self.data.insert(key, value);
-        response
+        Response { response_type: constants::ResponseType::Data, data: response}
     }
 
-    fn remove(&mut self, key: String) -> String{
+    fn remove(&mut self, key: String) -> Response{
         self.data.remove(&key);
-        key
+        Response { response_type: constants::ResponseType::Data, data: key}
     }
 
-    fn update(&mut self, key: String, value: String) -> String{
+    fn update(&mut self, key: String, value: String) -> Response{
         let result = self.data.insert(key.clone(), value.clone());
 
         match result {
-            Some(_) => return key,
-            None => return self.add(key, value)
-        };
+            Some(_) => Response { response_type: constants::ResponseType::Data, data: key },
+            None => self.add(key, value)
+        }
     }
 
     fn split(message: &[u8]) -> Result<(constants::Methods, String, String), String>{
@@ -73,7 +71,9 @@ impl Engine{
                 state += 1;
                 temp = [0u8; 256];
                 index = 0;
+                continue;
             }
+            
             temp[index] = *i;
             index += 1;
         }

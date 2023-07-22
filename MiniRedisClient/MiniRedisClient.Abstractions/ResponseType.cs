@@ -2,6 +2,7 @@ namespace MiniRedisClient.Abstractions;
 
 public enum ResponseType
 {
-    Data = 1,
-    Error = 2
+    Error = 1,
+    Data = 2,
+    NotFound = 3
 }

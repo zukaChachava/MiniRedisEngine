@@ -24,11 +24,5 @@ impl Listener{
         stream.read(&mut buf).await.unwrap();
         buf
     }
-
-    pub async fn read_request_as_string(stream: &mut TcpStream) -> String{
-        let mut text: String = String::new();
-        stream.read_to_string(&mut text).await.unwrap();
-        text
-    }
 }
 

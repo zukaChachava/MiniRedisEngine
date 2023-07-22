@@ -1,6 +1,7 @@
 ﻿using System.Net.Sockets;
 using System.Text;
 using MiniRedisClient.Abstractions;
+using MiniRedisClient.Abstractions.Exceptions;
 
 namespace MiniRedisClient.Core;
 
@@ -20,7 +21,7 @@ public class RedisClient : IMiniRedisClient
 
     public RedisClient(): this("127.0.0.1", 9009){}
 
-    public async Task GetAsync<TValue>(string key)
+    public async Task<string> GetAsync(string key)
     {
         var response = await ExecuteRequestAsync(async (networkStream) =>
         {
@@ -33,10 +34,16 @@ public class RedisClient : IMiniRedisClient
             return responseBytes;
         });
         
-        Console.WriteLine(ProcessResponse(response));
+        return ProcessResponse(response);
     }
 
-    public async Task AddAsync<TValue>(string key, TValue value)
+    public async Task<TValue> GetAsync<TValue>(string key)
+    {
+        string value = await GetAsync(key);
+        return (TValue)(Convert.ChangeType(value, typeof(TValue)) ?? throw new ConversionException($"Can not convert string to {typeof(TValue)}"));
+    }
+
+    public async Task<string> AddAsync<TValue>(string key, TValue value)
     {
         var response = await ExecuteRequestAsync(async (networkStream) =>
         {
@@ -48,11 +55,11 @@ public class RedisClient : IMiniRedisClient
             int _ = await networkStream.ReadAsync(responseBytes);
             return responseBytes;
         });
-        
-        Console.WriteLine(ProcessResponse(response));
+
+        return ProcessResponse(response);
     }
 
-    public async Task RemoveAsync(string key)
+    public async Task<string> RemoveAsync(string key)
     {
         var response = await ExecuteRequestAsync(async (networkStream) =>
         {
@@ -65,10 +72,10 @@ public class RedisClient : IMiniRedisClient
             return responseBytes;
         });
 
-        Console.WriteLine(ProcessResponse(response));
+        return ProcessResponse(response);
     }
 
-    public async Task UpdateAsync<TValue>(string key, TValue value)
+    public async Task<string> UpdateAsync<TValue>(string key, TValue value)
     {
         var response = await ExecuteRequestAsync(async (networkStream) =>
         {
@@ -81,7 +88,7 @@ public class RedisClient : IMiniRedisClient
             return responseBytes;
         });
         
-        Console.WriteLine(ProcessResponse(response));
+        return ProcessResponse(response);
     }
 
     private async Task<byte[]> ExecuteRequestAsync(Func<NetworkStream, Task<byte[]>> operations)
@@ -112,8 +119,15 @@ public class RedisClient : IMiniRedisClient
     {
         (var responseType, string response) = SplitResponseMessage(message);
 
-        if (responseType == ResponseType.Error)
-            throw new Exception(response); // ToDo: make custom exception
+        switch (responseType)
+        {
+            case ResponseType.Error:
+                throw new EngineException(response);
+            case ResponseType.NotFound:
+                throw new NotFoundException(response);
+            default:
+                break;
+        }
         
         return response;
     }
