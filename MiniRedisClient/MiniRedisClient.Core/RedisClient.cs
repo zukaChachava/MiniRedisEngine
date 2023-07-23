@@ -79,7 +79,7 @@ public class RedisClient : IMiniRedisClient
     {
         var response = await ExecuteRequestAsync(async (networkStream) =>
         {
-            byte[] bytes = GenerateBytes(GenerateMessage(Method.Remove, key, value?.ToString() ?? string.Empty));
+            byte[] bytes = GenerateBytes(GenerateMessage(Method.Update, key, value?.ToString() ?? string.Empty));
             await networkStream.WriteAsync(bytes, 0, bytes.Length);
             await networkStream.FlushAsync();
             

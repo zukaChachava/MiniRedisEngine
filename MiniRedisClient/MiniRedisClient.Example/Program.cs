@@ -13,9 +13,8 @@ IMiniRedisClient client = new RedisClient();
 //
 // result = await client.AddAsync("mesame", "chachava");
 // Console.WriteLine(result);
-
-var x = await client.AddAsync("mease", "zura");
-Console.WriteLine(x);
+var item = await client.AddAsync("mease", "zura");
+Console.WriteLine(item);
 
 try
 {
@@ -26,6 +25,27 @@ catch (Exception ex)
 {
     Console.WriteLine(ex.Message);
 }
+
+
+await client.UpdateAsync("mease", "Updated Data");
+
+try{
+    System.Console.WriteLine(await client.GetAsync<string>("mease"));
+}
+catch(Exception ex){
+    System.Console.WriteLine(ex.Message);
+}
+
+
+await client.RemoveAsync("mease");
+
+try{
+    System.Console.WriteLine(await client.GetAsync<string>("mease"));
+}
+catch(Exception ex){
+    System.Console.WriteLine(ex.Message);
+}
+
 
 try
 {
